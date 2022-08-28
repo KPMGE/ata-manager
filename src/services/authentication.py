@@ -13,11 +13,12 @@ class Authentication:
 
     def get_services(self):
         creds = None
-        if os.path.exists('token.json'):
+        if os.path.exists(self.tokenPath):
             creds = Credentials.from_authorized_user_file(self.tokenPath, self.scopes)
 
         # If there are no (valid) credentials available, let the user log in.
         if not creds or not creds.valid:
+            print('not creds')
             if creds and creds.expired and creds.refresh_token:
                 creds.refresh(Request())
             else:
