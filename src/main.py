@@ -4,10 +4,12 @@ from services.authentication import Authentication
 from services.drive import Drive
 
 # If modifying these scopes, delete the file token.json.
-SCOPES = ['https://www.googleapis.com/auth/drive']
-CREDENTIALS_PATH =  './credentials/credentials.json'
-TOKEN_PATH = './credentials/token.json' 
+SCOPES = ['https://www.googleapis.com/auth/drive', 'https://www.googleapis.com/auth/spreadsheets.readonly']
+CREDENTIALS_PATH =  './src/credentials/credentials.json'
+TOKEN_PATH = './src/credentials/token.json' 
 
+SAMPLE_SPREADSHEET_ID = '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms'
+SAMPLE_RANGE_NAME = 'Class Data!A2:E'
 
 def main():
     drive_service, spred_service, gmail_service = Authentication(TOKEN_PATH, CREDENTIALS_PATH, SCOPES).get_services()
@@ -15,7 +17,6 @@ def main():
     drive = Drive(drive_service)
     drive.print_files()
     drive.print_folders()
-    drive.copy_file_into('1KRuEbngTY9ok6mCOtCYsR6gMdSSHYSo2VfwddoakW_0', '14S-pQ_ea42ydP-4ejN6cYEDbwRe8wZn4')
 
 if __name__ == '__main__':
     main()
