@@ -1,56 +1,36 @@
 from googleapiclient.errors import HttpError
 from datetime import datetime
 
+MONTHS_PORTUGUESE = {
+ 1: 'Janeiro',
+ 2: 'Fevereiro',
+ 3: 'Março',
+ 4: 'Maio',
+ 5: 'Abril',
+ 6: 'Junho',
+ 7: 'Julho',
+ 8: 'Agosto',
+ 8: 'Setembro',
+ 10: 'Outubro',
+ 11: 'Novembro',
+ 12: 'Dezembro'
+}
+
 class Drive:
     def __init__(self, service):
         self.service = service
 
-    def copy_weekly_ata(self):
-        ata_id = self.get_ata_id()
-
-        folder_id = self.get_folder_id()
-
+    def copy_weekly_ata(self, main_folder_id):
         today = datetime.now()
         currrent_date = today.strftime("%d/%m/%Y")
 
-        self.copy_file_into(ata_id, folder_id, currrent_date )
+        save_file_folder_id = self.get_folders_inside(main_folder_id)[MONTHS_PORTUGUESE[today.month]]
+        ata_id = self.get_ata_id(main_folder_id)
 
-        # print(f"ata id: {ata_id}")
-        # print(f"folder id: {folder_id}")
-
-    def get_folder_id(self):
-        today = datetime.now()
-        month_number = today.month
-
-        folders = self.get_folders()
-
-        def find_month_id(month):
-            for folder in folders:
-                if folder['name'] == month:
-                    return folder['id']
-            exit(f"cannot find folder for month: {month}")
-
-        match month_number:
-            case 1: return find_month_id('Janeiro') 
-            case 2: return find_month_id('Fevereiro') 
-            case 3: return find_month_id('Março') 
-            case 4: return find_month_id('Abril') 
-            case 5: return find_month_id('Maio') 
-            case 6: return find_month_id('Junho') 
-            case 7: return find_month_id('Julho') 
-            case 8: return find_month_id('Agosto') 
-            case 9: return find_month_id('Setembro') 
-            case 10: return find_month_id('Outubro') 
-            case 11: return find_month_id('Novembro') 
-            case 12: return find_month_id('Dezembro') 
-            case _:
-                print("Invalid month number!")
+        self.copy_file_into(ata_id, save_file_folder_id , currrent_date)
 
     def copy_file_into(self, fileId, folderId, new_name):
-        reqBody = {
-            'parents': [ folderId ], 
-            'name': new_name
-        }
+        reqBody = { 'parents': [ folderId ], 'name': new_name }
 
         try:
             result = self.service.files().copy(fileId=fileId, body=reqBody, fields='webViewLink').execute()
@@ -61,8 +41,8 @@ class Drive:
         except HttpError as error:
             print(f'An error occurred: {error}')
 
-    def get_ata_id(self): 
-        query = "'14S-pQ_ea42ydP-4ejN6cYEDbwRe8wZn4' in parents"
+    def get_ata_id(self, folder_id): 
+        query = f"'{folder_id}' in parents"
         try:
             results = self.service.files().list(pageSize=20, q=query).execute()
             items = results.get('files', [])
@@ -72,25 +52,25 @@ class Drive:
                 return
             for item in items:
                 if item['name'] == 'Modelo Ata':
-                    print(f"Ata found! => ${item['id']}")
+                    print(f"Ata found!")
                     return item['id']
             exit('Ata not found!')
         except HttpError as error:
             print(error)
 
-    def get_folders(self):
-        query = "mimeType = 'application/vnd.google-apps.folder' and '14S-pQ_ea42ydP-4ejN6cYEDbwRe8wZn4' in parents"
+    def get_folders_inside(self, folder_id):
+        query = f"mimeType = 'application/vnd.google-apps.folder' and '{folder_id}' in parents"
         try:
             results = self.service.files().list(pageSize=20, q=query).execute()
             folders = results.get('files', [])
-            foldersDic  = []
+            foldersDictionary = {}
 
             if not folders:
                 print('No folders found.')
                 return
             for folder in folders:
-                foldersDic.append({'name': folder['name'], 'id': folder['id']})
-            return folders
+                foldersDictionary[folder['name']] = folder['id']
+            return foldersDictionary
 
         except HttpError as error:
             print(error)
