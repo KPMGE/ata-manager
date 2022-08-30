@@ -31,7 +31,6 @@ class Authentication:
         try:
             drive_service  = build('drive', 'v3', credentials=creds)
             spread_service = build('sheets', 'v4', credentials=creds)
-            gmail_service  = build('gmail', 'v1', credentials=creds)
-            return drive_service, spread_service, gmail_service
+            return drive_service, spread_service
         except HttpError as error:
             print(f'An error occurred: {error}')

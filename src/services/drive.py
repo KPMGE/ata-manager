@@ -27,7 +27,8 @@ class Drive:
         save_file_folder_id = self.get_folders_inside(main_folder_id)[MONTHS_PORTUGUESE[today.month]]
         ata_id = self.get_ata_id(main_folder_id)
 
-        self.copy_file_into(ata_id, save_file_folder_id , currrent_date)
+        link = self.copy_file_into(ata_id, save_file_folder_id , currrent_date)
+        return link
 
     def copy_file_into(self, fileId, folderId, new_name):
         reqBody = { 'parents': [ folderId ], 'name': new_name }
@@ -40,6 +41,7 @@ class Drive:
             return link
         except HttpError as error:
             print(f'An error occurred: {error}')
+        
 
     def get_ata_id(self, folder_id): 
         query = f"'{folder_id}' in parents"
