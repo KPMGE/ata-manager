@@ -44,17 +44,17 @@ class Spreadsheet:
 
 
   #Retorna todos os emails
-  def get_emails(self):
-    emails = []
+  def get_students(self):
+    students = []
     for person in self.content:
-      emails.append(person[2])
+      students.append({'name': person[0],'email':person[2]})
     # print(emails)
-    return emails
+    students.pop(0)
+    return students
 
 
   #Retorna o horário da reunião
   def get_time(self):
-    # print(self.content[1][4])
     return self.content[1][4]
 
 
@@ -71,9 +71,8 @@ class Spreadsheet:
       #Caso a pessoa não tenha preenchido a ata ainda
       if not int(person[1]):
         name = person[0]
-        email = person[2]
         self.__update_status(i)
-        return name, email
+        return name
 
     self.__reset_status()
 
