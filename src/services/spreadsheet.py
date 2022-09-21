@@ -13,7 +13,6 @@ class Spreadsheet:
     try:
       content = self.service.spreadsheets().values().get(spreadsheetId=spreadsheet_id, range=range).execute()
       values = content.get('values', [])
-      # print(values)
 
     except HttpError as error:
       print(error)
@@ -48,7 +47,7 @@ class Spreadsheet:
     students = []
     for person in self.content:
       students.append({'name': person[0],'email':person[2]})
-    # print(emails)
+
     students.pop(0)
     return students
 
@@ -57,6 +56,8 @@ class Spreadsheet:
   def get_time(self):
     return self.content[1][4]
 
+  def get_range(self):
+    return self.content[1][5]
 
   def get_todays_writer(self):
     matrix = self.content
