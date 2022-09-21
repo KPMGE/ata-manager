@@ -1,8 +1,11 @@
 import smtplib
 import email.message
+from dotenv import load_dotenv
+import os
 
-# Criar .env
-APP_PASSWORD = 'password'
+load_dotenv()
+
+APP_PASSWORD = os.getenv("APP_PASSWORD")
 
 def get_body(student_name, writer_name, ata_link):
     body = f"""
