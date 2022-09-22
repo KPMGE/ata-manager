@@ -13,8 +13,8 @@ load_dotenv()
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = ['https://www.googleapis.com/auth/drive', 'https://www.googleapis.com/auth/spreadsheets']
-CREDENTIALS_PATH =  './credentials/credentials.json'
-TOKEN_PATH = './credentials/token.json' 
+CREDENTIALS_PATH =  './src/credentials/credentials.json'
+TOKEN_PATH = './src/credentials/token.json' 
 
 SPREADSHEET_ID = os.getenv("SPREADSHEET_ID")
 RANGE = "!A1:E20"
