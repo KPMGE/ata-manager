@@ -1,5 +1,3 @@
-from json import load
-import sched
 from services.authentication import Authentication
 from services.drive import Drive
 from services.spreadsheet import Spreadsheet
