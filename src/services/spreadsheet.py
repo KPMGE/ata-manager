@@ -51,10 +51,12 @@ class Spreadsheet:
     students.pop(0)
     return students
 
-
   #Retorna o horário da reunião
   def get_time(self):
-    return self.content[1][4]
+    time = self.content[1][4].split(":")
+    hour = int(time[0])
+    hour += 3
+    return f"{hour}:{time[1]}"
 
   def get_range(self):
     return self.content[1][5]
