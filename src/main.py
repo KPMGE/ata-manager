@@ -7,6 +7,9 @@ import schedule
 import time
 import os
 
+
+from datetime import datetime
+
 load_dotenv()
 
 # If modifying these scopes, delete the file token.json.
@@ -24,8 +27,8 @@ drive_service, spread_service = Authentication(TOKEN_PATH, CREDENTIALS_PATH, SCO
 drive = Drive(drive_service)
 spreadsheet = Spreadsheet(spread_service, SPREADSHEET_ID, RANGE)
 
-
 def main():
+    print("RUNNING MAIN")
 
     ata_link = drive.copy_weekly_ata(ATA_MAIN_FOLDER_ID)
     students = spreadsheet.get_students()
@@ -33,10 +36,20 @@ def main():
     writer_name = spreadsheet.get_todays_writer()
     send_emails(students, writer_name, ata_link, SENDER_MAIL)
 
-
 if __name__ == '__main__':
+    main()
+    exit(0)
+
+    release_time = spreadsheet.get_time()
+
+    print(f"RELEASE TIME: {release_time}")
+
+    now = datetime.now()
+    current_time = now.strftime("%H:%M:%S")
+    print("Current Time =", current_time)
 
     schedule.every().monday.at(spreadsheet.get_time()).do(main)
+
     while True:
         schedule.run_pending()
         time.sleep(1)

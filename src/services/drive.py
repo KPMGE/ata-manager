@@ -1,6 +1,13 @@
 from googleapiclient.errors import HttpError
 from datetime import datetime
 
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+SHARED_DRIVE_ID = os.getenv("SHARED_DRIVE_ID")
+
 MONTHS_PORTUGUESE = {
  1: 'Janeiro',
  2: 'Fevereiro',
@@ -24,17 +31,29 @@ class Drive:
         today = datetime.now()
         currrent_date = today.strftime("%d/%m/%Y")
 
-        save_file_folder_id = self.get_folders_inside(main_folder_id)[MONTHS_PORTUGUESE[today.month]]
+        folders = self.get_folders_inside(main_folder_id)
+        if folders == None: 
+            print("[ERROR]: no folders found on ata folder directory!")
+            exit(1)
+
+        save_file_folder_id = folders[MONTHS_PORTUGUESE[today.month]]
         ata_id = self.get_ata_id(main_folder_id)
 
         link = self.copy_file_into(ata_id, save_file_folder_id , currrent_date)
         return link
 
     def copy_file_into(self, fileId, folderId, new_name):
+        print(f'fileId: {fileId}')
         reqBody = { 'parents': [ folderId ], 'name': new_name }
 
         try:
-            result = self.service.files().copy(fileId=fileId, body=reqBody, fields='webViewLink').execute()
+            result = self.service.files().copy(
+                    supportsAllDrives=True,
+                    fileId=fileId, 
+                    body=reqBody,
+                    fields='webViewLink'
+            ).execute()
+
             print("File copied successfully!\n")
             link = result['webViewLink']
             print(f"Copied file link: {link}")
@@ -46,7 +65,15 @@ class Drive:
     def get_ata_id(self, folder_id): 
         query = f"'{folder_id}' in parents"
         try:
-            results = self.service.files().list(pageSize=20, q=query).execute()
+            results = self.service.files().list(
+                    pageSize=20,
+                    q=query,
+                    driveId=SHARED_DRIVE_ID,
+                    includeItemsFromAllDrives=True,
+                    supportsAllDrives=True,
+                    corpora='drive'
+            ).execute()
+
             items = results.get('files', [])
 
             if not items:
@@ -63,7 +90,14 @@ class Drive:
     def get_folders_inside(self, folder_id):
         query = f"mimeType = 'application/vnd.google-apps.folder' and '{folder_id}' in parents"
         try:
-            results = self.service.files().list(pageSize=20, q=query).execute()
+            results = self.service.files().list(
+                    pageSize=20,
+                    q=query,
+                    driveId=SHARED_DRIVE_ID,
+                    includeItemsFromAllDrives=True,
+                    supportsAllDrives=True,
+                    corpora='drive'
+            ).execute()
             folders = results.get('files', [])
             foldersDictionary = {}
 
