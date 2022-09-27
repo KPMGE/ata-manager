@@ -37,14 +37,8 @@ def main():
     send_emails(students, writer_name, ata_link, SENDER_MAIL)
 
 if __name__ == '__main__':
-    
-    main()
-    exit(0)
-    
     release_time = spreadsheet.get_time()
-
     print(f"RELEASE TIME: {release_time}")
-
     schedule.every().monday.at(spreadsheet.get_time()).do(main)
     while True:
         schedule.run_pending()
