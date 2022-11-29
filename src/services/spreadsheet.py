@@ -44,7 +44,7 @@ class Spreadsheet:
   #Retorna todos os emails
   def get_students(self):
     students = []
-    content = self.__get_content(self.spreadsheet_id, self.range)
+    content = self.__get_content(self.spreadsheetId, self.range)
     for person in content:
       students.append({'name': person[0],'email':person[2]})
 
@@ -53,18 +53,18 @@ class Spreadsheet:
 
   #Retorna o horário da reunião
   def get_time(self):
-    content = self.__get_content(self.spreadsheet_id, self.range)
+    content = self.__get_content(self.spreadsheetId, self.range)
     time = content[1][4].split(":")
     hour = int(time[0])
     hour += 3
     return f"{hour}:{time[1]}"
 
   def get_range(self):
-    content = self.__get_content(self.spreadsheet_id, self.range)
+    content = self.__get_content(self.spreadsheetId, self.range)
     return content[1][5]
 
   def get_todays_writer(self):
-    matrix = self.__get_content(self.spreadsheet_id, self.range)
+    matrix = self.__get_content(self.spreadsheetId, self.range)
     matrix.pop(0)
 
     for i,person in enumerate(matrix):
